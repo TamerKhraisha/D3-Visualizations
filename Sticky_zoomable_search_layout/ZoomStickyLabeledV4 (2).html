@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .links line {
+        stroke: #999;
+        stroke-opacity: 0.6;
+    }
+
+    .node circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+    }
+
+    .node text {
+        fill: #666;
+        font-family: Helvetica
+    }
+</style>
+
+<body>
+    <div class="ui-widget">
+        <input id="search">
+        <button type="button" onclick="searchNode()">Search</button>
+        <button type="button" onclick="reset()">Reset</button>
+    </div>
+
+    <svg width="800" height="800"></svg>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script>
+        var graph = {
+            nodes: [
+                { "id": "Tommy", "group": 1 },
+                { "id": "Laura", "group": 2 },
+                { "id": "Sara", "group": 2 },
+                { "id": "Kevin", "group": 2 },
+                { "id": "George", "group": 2 },
+                { "id": "Eleonora", "group": 3 },
+                { "id": "Dina", "group": 3 },
+                { "id": "Rocco", "group": 3 },
+                { "id": "Signorina", "group": 3 }
+            ],
+            links: [
+                { "source": "Tommy", "target": "Laura", "value": 1 },
+                { "source": "Laura", "target": "Sara", "value": 1 },
+                { "source": "Tommy", "target": "Kevin", "value": 1 },
+                { "source": "Rocco", "target": "George", "value": 1 },
+                { "source": "Signorina", "target": "Eleonora", "value": 1 },
+                { "source": "Tommy", "target": "Dina", "value": 1 },
+                { "source": "Laura", "target": "Rocco", "value": 1 },
+                { "source": "Tommy", "target": "Signorina", "value": 1 },
+            ]
+        };
+
+        var svg = d3.select("svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+
+
+        //add encompassing group for the zoom 
+        var g = svg.append("g")
+            .attr("class", "everything")
+
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function (d) { return d.id; }).distance(80))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        var link = g.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(graph.links)
+            .enter().append("line")
+            .attr("stroke-width", function (d) { return Math.sqrt(d.value); });
+
+
+        var node = g.selectAll(".node")
+            .data(graph.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
+            .on('click', connectedNodes);  //if you double click the neighbor , you get its neighbors
+
+
+        node.append("circle")
+            .attr("r", 10)
+            .attr("fill", function (d) {
+                switch (d.group) {
+                    case 1:
+                        return "tomato";
+                        break;
+                    case 2:
+                        return "gold";
+                        break;
+                    case 3:
+                        return "olive";
+                        break;
+                }
+            });
+
+        node.append("text")
+            .attr("dx", 6)
+            .text(function (d) { return d.id; });
+
+        simulation
+            .nodes(graph.nodes)
+            .on("tick", ticked);
+
+        simulation.force("link")
+            .links(graph.links);
+
+        function ticked() {
+            link
+                .attr("x1", function (d) { return d.source.x; })
+                .attr("y1", function (d) { return d.source.y; })
+                .attr("x2", function (d) { return d.target.x; })
+                .attr("y2", function (d) { return d.target.y; });
+
+            node.attr("transform", function (d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+        }
+
+        function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            //d.fx = null;
+            //d.fy = null;
+        }
+
+
+        //Zoom functions 
+        function zoom_actions() {
+            g.attr("transform", d3.event.transform)
+        }
+
+
+        var zoom_handler = d3.zoom()
+            .on("zoom", zoom_actions)
+
+
+        zoom_handler(svg)
+
+
+
+
+
+        //The highlighe function
+
+        var toggle = 0;
+        //Create an array logging what is connected to what
+        var linkedByIndex = {};
+        for (i = 0; i < graph.nodes.length; i++) {
+            linkedByIndex[i + "," + i] = 1;
+        };
+        graph.links.forEach(function (d) {
+            linkedByIndex[d.source.index + "," + d.target.index] = 1; // this stores the links by taking the index of each node(0,1,....,nodes.length)
+        });
+        //This function looks up whether a pair are neighbours
+        function neighboring(a, b) {
+            return linkedByIndex[a.index + "," + b.index];
+        }
+        function connectedNodes() {
+            if (toggle == 0) { // if no nodes are selected
+                //Reduce the opacity of all but the neighbouring nodes
+                d = d3.select(this).node().__data__; // in the above code we already assigned data to all SVG elements and once data is assigned, it is stored in the property __data__.
+                // .node()returns the first non null value of the selection
+                // thus the selection will return a datum
+                node.style("opacity", function (o) { // select the nodes and calls their datum with the parameter o (o will be similar to d)
+                    return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1; // return 1 if the two nodes are neighbors, otherwise return 0.1
+                });
+                link.style("opacity", function (o) {
+                    return d.index == o.source.index | d.index == o.target.index ? 1 : 0.1;
+                });
+
+                //Reduce the op
+                toggle = 1; // change the toggle status to clicked
+            } else {
+                //Put them back to opacity=1
+                node.style("opacity", 1);
+                link.style("opacity", 1);
+                toggle = 0;
+            }
+        }
+
+        function mosout() {
+
+            node.style("opacity", 1);
+            link.style("opacity", 1);
+
+        }
+
+
+        // The search function
+
+
+
+
+        var NodeIdArray = []
+        var NodeCaseDic = {}
+        for (i = 0; i < graph.nodes.length; i++) {
+            NodeIdArray.push(graph.nodes[i].id.toLowerCase());
+            NodeCaseDic[graph.nodes[i].id.toLowerCase()] = graph.nodes[i].id
+            NodeCaseDic[graph.nodes[i].id] = graph.nodes[i].id
+        }
+
+
+        function isInArray(value, array) {
+            return array.indexOf(value) > -1;
+        }
+
+        function searchNode() {
+
+            //find the node
+
+            var selectedVal = document.getElementById('search').value;
+            var selectedValLowerCase = document.getElementById('search').value.toLowerCase();
+            var node = svg.selectAll(".node");
+
+            //if (selectedVal == "none") {
+            //alert("I am an alert box!")
+
+
+            var similarities = NodeIdArray.filter(word => word.substring(0, selectedValLowerCase.length) == selectedValLowerCase);
+            var sim = similarities.map(x => NodeCaseDic[x])
+
+
+            //if (NodeIdArray.includes(selectedValLowerCase)==false){
+            if (similarities.length == 0) {
+                alert("Couldn't find the name you searched for!");
+            } else {
+                var selected = node.filter(function (d, i) {
+                    if (isInArray(d.id, sim) == false) {
+                        return d.id;
+                    }
+
+
+                });
+
+                //var selected = node.filter(word => word in sim)
+
+                selected.style("opacity", "0");
+                var link = svg.selectAll(".links")
+                link.style("opacity", "0");
+                //d3.selectAll(".node, .links").transition()
+                //    .duration(5000)
+                //    .style("opacity", 1);
+
+
+            }
+        };
+
+
+        function reset() {
+            d3.selectAll(".node, .links").transition()
+                .duration(1000)
+                .style("opacity", 1);
+        }
+
+    </script>
