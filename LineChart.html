@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+
+<head>
+</head>
+
+<body>
+<svg width="960" height="500"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var svg = d3.select("svg"),
+    margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var parseTime = d3.timeParse("%d-%b-%y"); // this creates a parser that converts a string to a date, e.g. parseTime("June 30, 2015") may return 'Tue Jun 30 2015 00:00:00 GMT-0700 (PDT)'. T
+
+
+// scaleTime() and scaleLinear() are scale functions that map from a continuous input domain to a continuous output range. see http://d3indepth.com/scales/
+var x = d3.scaleTime() // scaleTime is similar to scaleLinear except the domain is expressed as an array of dates. (It’s very useful when dealing with time series data. See where x.domain is defined
+    .rangeRound([0, width]); // Sets the scale’s range to the specified array of values while also setting the scale’s interpolator to interpolateRound, check documentation for more.
+
+var y = d3.scaleLinear() // A scale for transforming data values into positions and lengths. This is the most commonly used scale.
+    .rangeRound([height, 0]);
+
+var line = d3.line() //Constructs a new line generator with the default settings. see https://bl.ocks.org/d3indepth/e312c205b6b07757551bffafb265589b for an example and http://d3indepth.com/shapes/ for explanation.
+    .x(function(d) { return x(d.date); }) // Accessory function. Every line must have a x and y starting point, and this gets the x coordinate. we are using the x ScaleTime defined above
+    .y(function(d) { return y(d.close); }); // y coordinates.
+
+d3.csv("data.csv", function(d) {
+  d.date = parseTime(d.date);
+  d.close = +d.close; // the plus is used to tell JS to treat close as a number and not string. See http://learnjsdata.com/read_data.html
+  return d;
+}, function(error, data) {
+  if (error) throw error;
+
+  x.domain(d3.extent(data, function(d) { return d.date; })); // when defining x we didn't incude the domain, and here we include it. d3.extent() returns the minimum and maximum value in the given array using natural order. These two numbers will define the x axes
+  y.domain(d3.extent(data, function(d) { return d.close; }));
+
+  g.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).ticks(3)); // ticks determines how many ticks to visualize
+    //.select(".domain") these two lines remove the bottom x line
+      //.remove();
+
+  g.append("g")
+      .call(d3.axisLeft(y))
+    .append("text")
+      .attr("fill", "#000")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", "end")
+      .text("Price ($)");
+
+  g.append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line);
+});
+
+</script>
+</body>
