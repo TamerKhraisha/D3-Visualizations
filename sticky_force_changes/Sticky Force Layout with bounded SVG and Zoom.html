@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.link {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node {
+  cursor: move;
+  fill: #ccc;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node.fixed {
+  fill: #f00;
+}
+
+</style>
+<body>
+<script src='http://d3js.org/d3.v3.min.js'></script>
+<script>
+
+
+var svg = d3.select("body").append("svg");
+var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom]);
+
+
+
+var width = 960,
+    height = 500,
+	radius = 12;
+	
+var zoom = d3.behavior.zoom()
+    .scaleExtent([1, 5]);	
+
+var force = d3.layout.force()
+    .size([width, height])
+    .charge(-400)
+    .linkDistance(40)
+    .on("tick", tick);
+
+var drag = force.drag()
+    .on("dragstart", dragstart); <!-- this is the part of the code that allows for dragging nodes around -->
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var g = svg.append("g");
+
+var link = g.selectAll(".link"),
+    node = g.selectAll(".node");
+
+d3.json("graph.json", function(error, graph) {
+  if (error) throw error;
+
+  force
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .start();
+
+  link = link.data(graph.links)
+    .enter().append("line")
+      .attr("class", "link");
+
+  node = node.data(graph.nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", radius)
+      .on("dblclick", dblclick)
+      .call(drag);
+
+});
+
+function tick() {
+  link.attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+  node.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); }) <!--This D3 example shows how to constrain the position of nodes within the rectangular bounds of the containing SVG element. As a side-effect of updating the node's cx and cy attributes, we update the node positions to be within the range [radius, width - radius] for x, [radius, height - radius] for y. If you prefer, you could use the each operator to do this as a separate step, rather than as a side-effect of setting attributes.-->
+     .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+}
+
+function dblclick(d) { <!-- when you double click on a node it removes the color -->
+  d3.select(this).classed("fixed", d.fixed = false);
+}
+
+function dragstart(d) { <!-- when you  click on a node it assigns it a class and the class is styled in the CSS section, and it makes the color red. It changes the position of nodes to fixed -->
+  d3.select(this).classed("fixed", d.fixed = true);
+}
+
+
+<!-- This example demonstrates how to prevent D3’s force layout from moving nodes that have been repositioned by the user. When the force layout’s drag behavior dispatches a dragstart event, the fixed property of the dragged node is set to true. This prevents the force layout from subsequently changing the position of the node (due to forces). Double-click to release a node.
+
+<!--Internally, the force layout uses three bits to control whether a node is fixed. The first bit can be set externally, as in this example. The second and third bits are set on mouseover and mousedown, respectively, so that nodes are fixed temporarily during dragging. Although the second and third bits are automatically cleared when dragging ends, the first bit stays true in this example, and thus nodes remain fixed after dragging.
+
+<!--Also note that the force layout resumes automatically on dragmove. This ensures that other nodes in the graph respond naturally to the dragged node’s movement. -->
+
+</script>

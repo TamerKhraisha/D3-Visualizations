@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.link {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node {
+  cursor: move;
+  fill: #ccc;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node.fixed {
+  fill: #f00;
+}
+
+</style>
+<body>
+<script src='http://d3js.org/d3.v3.min.js'></script>
+<script>
+
+var w = window.innerWidth;
+var h = window.innerHeight;
+
+var keyc = true, keys = true, keyt = true, keyr = true, keyx = true, keyd = true, keyl = true, keym = true, keyh = true, key1 = true, key2 = true, key3 = true, key0 = true <!-- these are used to 
+
+var focus_node = null, highlight_node = null;
+
+var text_center = false;
+var outline = false;
+
+var min_score = 0;
+var max_score = 1;
+
+var color = d3.scale.linear()
+
+var highlight_color = "darkred";
+var highlight_trans = 0.1;
+  
+var size = d3.scale.pow().exponent(1)
+  .domain([1,100])
+  .range([8,24]);
+	
+
+	
+var default_node_color = "#ccc";
+//var default_node_color = "rgb(3,190,100)";
+var default_link_color = "#888";
+var nominal_base_node_size = 8;
+var nominal_text_size = 10;
+var max_text_size = 24;
+var nominal_stroke = 1.5;
+var max_stroke = 4.5;
+var max_base_node_size = 36;
+var min_zoom = 0.1;
+var max_zoom = 7;
+
+
+
+
+
+var width = 960,
+    height = 500;
+
+var force = d3.layout.force()
+    .size([width, height])
+    .charge(-400)
+    .linkDistance(40)
+    .on("tick", tick);
+
+var drag = force.drag()
+    .on("dragstart", dragstart);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+	
+var gg = svg.append("g");
+
+var link = gg.selectAll(".link"),
+    node = gg.selectAll(".node");
+
+d3.json("graph.json", function(error, graph) {
+  if (error) throw error;
+
+  force
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .start();
+
+  link = link.data(graph.links)
+    .enter().append("line")
+      .attr("class", "link");
+
+  node = node.data(graph.nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", 12)
+      .on("dblclick", dblclick)
+      .call(drag);
+	  
+	  
+	<!-- Next we create the code that handles hover on nodes -->
+	
+	
+	node.on("mouseover", function(d) { <!-- mouseover event is sent to an element when the mouse pointer moves over the element -->
+	set_highlight(d); <!-- if the mouse is on an elements, highlight it -->
+	})
+	
+  .on("mousedown", function(d) { d3.event.stopPropagation(); <!-- event is sent to an element when the mouse pointer is clicked over an element-->
+  	focus_node = d;
+	set_focus(d)
+	if (highlight_node === null) set_highlight(d) <!-- The mouseout event is sent to an element when the mouse pointer leaves the element. -->
+	
+}	).on("mouseout", function(d) {
+		exit_highlight();
+
+}	);
+
+	  
+	  
+});
+
+function tick() {
+  link.attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+  node.attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; });
+}
+
+function dblclick(d) {
+  d3.select(this).classed("fixed", d.fixed = false);
+}
+
+function dragstart(d) {
+  d3.select(this).classed("fixed", d.fixed = true);
+}
+
+function dblclick(d) { <!-- when you double click on a node it removes the color -->
+  d3.select(this).classed("fixed", d.fixed = false);
+}
+
+</script>
