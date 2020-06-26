@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+    <style>
+        body {
+            padding: 2em;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        li {
+            list-style-type: none;
+        }
+
+        li>time+time:before {
+            content: "-";
+        }
+
+        li {
+            border-left: 5px solid pink;
+        }
+
+        dt {
+            color: tomato;
+            font-weight: bold;
+            font-family: open sans condensed;
+        }
+
+        cite {
+            font-family: open sans condensed;
+            font-style: normal;
+        }
+
+        dl,
+        li {
+            margin: 0;
+        }
+
+        li {
+            position: relative;
+            padding-left: 2em;
+            padding-bottom: 0.5em;
+        }
+
+        li>time {
+            position: absolute;
+            left: -3.5em;
+            color: black;
+            top: 1em;
+        }
+
+        li>time+time {
+            top: 1em;
+            left: -3.85em;
+        }
+
+            {
+            padding-left: 5em;
+            padding-top: 1.5em;
+        }
+
+        li>cite {
+            display: block;
+            font-size: 1.5em;
+            line-height: 1.5em;
+            padding-bottom: 0.1em;
+        }
+
+        li>time:first-of-type:after {
+            content: "\00B7";
+            position: absolute;
+            right: -0.3em;
+            top: -0.55em;
+            font-size: 8em;
+        }
+
+        dl {
+            padding-left: 1.5em;
+        }
+
+        li>cite {
+            display: block;
+            cursor: pointer;
+        }
+
+        li dl {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        li.expanded dl {
+            max-height: 60em;
+        }
+
+        li dl {
+            -webkit-transition: max-height 500ms ease-in-out;
+            -moz-transition: max-height 500ms ease-in-out;
+            -o-transition: max-height 500ms ease-in-out;
+            transition: max-height 500ms ease-in-out;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="timeline"></div>
+
+    <script>
+
+        window.onload = function () {
+
+
+            plays = [
+                { "play": "The Price of Political Uncertainty: Theory and Evidence from the Option Market", "date": "2016", "record": "Journal of Finance", "published": "How to price political uncertainty ,i.e uncertainty of political actions ?", "performance": "OptionMetrics. daily data on implied volatilities, deltas, and open interest for 20 countries. For 15 countries, OptionMetrics provided data on options on the country’s premier stock market index.For most countries, the option data begin between 2002 and 2006; for all countries, the data end in 2012. The longest sample, beginning in 1990, is available for the U.S. S&P 500 index. OptionMetrics provides S&P 500 index option data back to 1996. Our pre-1996 S&P 500 data are from Market Data Express (MDR). Data on political events were hand-collected.", "evidence": "Authors obtained a real variance measure by taking the difference between implied variance and realized variance. Implied variance is the square root of implied volatility available in OptionMetrics while data on realized variance was obtained in part from the Oxford-Man Institute’s Realized Library and in part by using  exponential smoothing" },
+                { "play": "Order Flow and Expected Option Returns", "date": "2016", "record": "possible version of play entered into Stationers' Register on 2 May 1594 as \"a booke intituled A plesant Conceyted historie called the Tayminge of a Shrowe'. First record of play as it exists today found in the First Folio (1623)", "published": "possible version of play published in quarto in 1594 as A Pleasant Conceited Historie, called The taming of a Shrew (republished in 1596 and 1607). Play as it exists today first published in the First Folio (1623) as The Taming of the Shrew.", "performance": "According to Philip Henslowe's diary, a play called The Tamynge of A Shrowe was performed at Newington Butts Theatre on 13 June 1594. This could have been either the 1594 A Shrew or the Shakespearean The Shrew, but as the Admiral's Men and the Lord Chamberlain's Men were sharing the theatre at the time, and as such Shakespeare himself would have been there, scholars tend to assume that it was The Shrew. The Shakespearean version was definitely performed at court before King Charles I and Queen Henrietta Maria on 26 November 1633, where it was described as being \"liked'.", "evidence": "Kier Elam posits a date of 1591 as a terminus post quem for the composition of The Shrew, based on Shakespeare's probable use of two sources published that year; Abraham Ortelius's map of Italy in the Theatrum Orbis Terrarum (4th ed.) and John Florio's Second Fruits. However, scholars continue to debate the relationship between the 1594 A Shrew and the 1623 The Shrew. Some theorise that A Shrew is a reported text, meaning The Shrew must have been written prior to 2 May 1594; others, that A Shrew is an early draft, meaning The Shrew must have been completed sometime after 2 May 1594. There are also arguments that A Shrew may have been a source for The Shrew, that they could be two completely unrelated plays based on the same (now lost) source (the \"Ur-Shrew\" theory), or A Shrew could be an adaptation of The Shrew. Critics remain divided on this issue, and as such, dating the play is extremely difficult." },
+                { "play": "The Cross-Sectional Variation Of Volatility Risk Premia", "date": "2016", "record": "entered into the Stationer' Register on 8 April 1634", "published": "published in quarto in 1634", "performance": "", "evidence": "Not included in the First Folio; written in collaboration with John Fletcher." }
+            ];
+
+            var descTerms = [
+                { key: "record", label: "Journal of Publication" },
+                { key: "published", label: "Research Question" },
+                { key: "performance", label: "Data Description" },
+                { key: "evidence", label: "Data Manipulation" },
+            ];
+
+            container = document.getElementById("timeline");
+            list = document.createElement("ol");
+            container.appendChild(list);
+            plays.forEach(function (play) {
+                var listItem = document.createElement("li");
+                if (play.date.indexOf("-") !== -1) {
+                    var dates = play.date.split("-");
+                    var time = document.createElement("time");
+                    time.textContent = dates[0];
+                    listItem.appendChild(time);
+                    time = document.createElement("time");
+                    time.textContent = dates[1];
+                    listItem.appendChild(time);
+                } else {
+                    var time = document.createElement("time");
+                    time.textContent = play.date;
+                    listItem.appendChild(time);
+                }
+                var cite = document.createElement("cite");
+                cite.textContent = play.play;
+                listItem.appendChild(cite);
+                var descList = document.createElement("dl");
+                descTerms.forEach(function (term) {
+                    if (play[term.key]) {
+                        var descTerm = document.createElement("dt");
+                        descTerm.textContent = term.label;
+                        descList.appendChild(descTerm);
+                        var descElem = document.createElement("dd");
+                        descElem.textContent = play[term.key];
+                        descList.appendChild(descElem);
+                    }
+                });
+                listItem.appendChild(descList);
+                list.appendChild(listItem);
+            })
+            var clicked = function (ev) {
+                if (ev.target.nodeName === "CITE") {
+                    var li = ev.target.parentNode;
+                    if (li.className === "expanded") {
+                        li.className = "";
+                    } else {
+                        li.className = "expanded";
+                    }
+                }
+            };
+            document.getElementById("timeline").addEventListener("click", clicked);
+
+
+        }
+
+    </script>
+</body>
+
+</html>
