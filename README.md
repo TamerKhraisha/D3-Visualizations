@@ -5,10 +5,10 @@ A collection of data visualizations and data-driven design ideas using D3.js.
 All visualizations in D3.js using v3 and v4.
 
 
-Note that if you want to test these visualizations on your local machine, then you are likely to run into CORS policy issues which will prevent the visualization from being displayed correctly. This happens for example when a script tries to access a file using the local file system.
 
+## Local testing
 
-## Suggestion: set up a local testing server.
+Note that if you want to test these visualizations on your local machine, then you are likely to run into CORS policy issues which will prevent the visualization from being displayed correctly. This happens for example when a script tries to access a file using the local file system. My suggestion is to run a Python simple local server according to the following steps:
 
 - Pull the repository
 - cd to the folder D3-Visualizations
