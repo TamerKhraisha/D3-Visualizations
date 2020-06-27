@@ -1,6 +1,9 @@
 # D3.js Visualizations
+<a href="https://d3js.org"><img src="https://d3js.org/logo.svg" align="left" hspace="10" vspace="6"></a>
 
-A collection of data visualizations and data-driven design ideas using D3.js.
+**D3** (or **D3.js**) is a JavaScript library for visualizing data using web standards. D3 helps you bring data to life using SVG, Canvas and HTML. D3 combines powerful visualization and interaction techniques with a data-driven approach to DOM manipulation, giving you the full capabilities of modern browsers and the freedom to design the right visual interface for your data.
+
+This repository contains a collection of data visualizations and data-driven design ideas using D3.js.
 
 All visualizations in D3.js using v3 and v4.
 
