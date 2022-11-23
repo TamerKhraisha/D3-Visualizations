@@ -17,9 +17,9 @@ Note that if you want to test these visualizations on your local machine, then y
 - cd to the folder D3-Visualizations
 - Run a simple local HTTP server using Python
    - Make sure you install Python
-   - Check the Python version you have (type "python -V" into a terminal)
-   - If Python version returned above is 3.X -> run "python3 -m http.server"
-   - If Python version returned above is 2.X -> run "python -m SimpleHTTPServer"
+   - Check the Python version you have ( type ```python -V``` into a terminal)
+   - If Python version returned above is 3.X -> run ```python3 -m http.server``` or ```python -m http.server``` for windows
+   - If Python version returned above is 2.X -> run ```python -m SimpleHTTPServer```
 
 
-More information on how to set up a local server: https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server
+More information on how to set up a local server are available [here](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server)
