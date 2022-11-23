@@ -1,0 +1,86 @@
+/* ---------------------------------------------------------------------------------------------------- */
+/* RESET CSS */
+
+/* 0. resetting css is highly recommended; this overrides some default browser styles and allows you to start from a "blank slate" */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+body {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+#header {
+    color: white;
+    text-align: left;
+    font-weight: bold;
+}
+
+.charttitle {
+    color: #222;
+    text-align: center;
+    font-weight: bolder;
+}
+
+#circle:hover path.fade {
+    opacity: 0.07;
+}
+
+#tooltip {
+    color: white;
+    opacity: .8;
+    background: #333;
+    padding: 5px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    font-size: 12px;
+    position: absolute;
+    z-index: 10;
+    visibility: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.legendtext {
+    margin-left: 30px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-size: 12px;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.mainline {
+    fill: none;
+    stroke-width: 3px;
+}

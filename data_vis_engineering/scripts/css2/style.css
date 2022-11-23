@@ -1,0 +1,72 @@
+html,
+body {
+  overflow: hidden;
+  background: #262b2e;
+}
+
+#wrapper {
+  height:100vh;
+  width:100vw;
+  text-align: center;
+  display: table;
+  position:absolute;
+}
+
+#title {
+  display: table-cell;
+  vertical-align: middle;
+  z-index: -999;
+}
+
+#title h2 {
+  color: #fff;
+  font-size: 7vh;
+  font-family: 'Amatic SC', cursive;
+  font-weight:normal;
+
+}
+
+#title h3 {
+  color: #fff;
+  font-size: 5vh;
+  font-family: 'Amatic SC', cursive;
+  font-weight:normal;
+}
+
+#title h4 {
+  color: #fff;
+  font-size: 3vh;
+  font-family: 'Amatic SC', cursive;
+  font-weight:normal;
+}
+
+
+#wrapper canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#canvas {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#canvas {
+  z-index: 1;
+}
+#canvasbg {
+  z-index: -10;
+  -webkit-filter: blur(3px);
+  -moz-filter: blur(3px);
+  -o-filter: blur(3px);
+  filter: blur(3px);
+  opacity: 0.6;
+}
+
+#name{
+	font-size:50px !important;
+}
+
+
