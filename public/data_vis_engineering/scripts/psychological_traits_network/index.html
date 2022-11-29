@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+    <title>Personality Traits</title>
+	<link rel="stylesheet" type="text/css" href="styleSrebVis.css" />
+    <link href="https://fonts.googleapis.com/css?family=Amatic+SC" rel="stylesheet">
+
+    <style>
+@media screen and (max-width: 1366px) {
+    h1{
+	font-size:40px !important;
+	margin-top:50px !important;
+	text-align:center;
+	width:400px !important; 
+}
+.artwork img {
+	width:400px !important;
+}
+.explanation{   /* This is the list containining the information below the image */
+    font-size:18px !important;
+    width:400px !important;
+}
+body{
+background-image: url("SrebImageSmall.png");
+}	
+}
+	
+	
+	
+    </style>
+</head>
+<body>
+
+
+    <div id='container'>
+        <div id='graph'><p id='PageTitle'>Network Analysis of Psychological Attributes</p>
+		<p class="Authors">Nodes are personality traits and links are the correlations between them. Correlation indicates the linear association, negative (dashed)<br> or positive (solid), that one personality trait has with another.</p>
+
+
+		</div>
+        <div id='notes'></div>
+    </div>
+    <script src='https://d3js.org/d3.v3.min.js'></script>
+
+<script>
+if (window.matchMedia("(min-width: 1367px)").matches) {
+  document.write('<script type="text/javascript" src="BigScreen.js"><\/script>');
+} 
+</script> 
+	
+<script>
+if (window.matchMedia("(max-width: 1367px)").matches) {
+  document.write('<script type="text/javascript" src="SmallScreen.js"><\/script>');
+} 
+</script> 
+	
+</body>
+</html>
